@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bingão das Mães 2026 - Marcação</title>
+    <title>Bingão das Mães 2026 - Operador</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -14,106 +14,101 @@
             display: flex; flex-direction: column; align-items: center;
             padding: 1vh 1.5vw; color: white;
         }
-        .header { text-align: center; width: 100%; max-width: 1600px; flex-shrink: 0; padding-bottom: 0.8vh; }
-        .header h1 { font-size: 3.8vh; font-weight: 900; color: #ffd700; text-shadow: 2px 2px 0px #b30047; text-transform: uppercase; }
+        .header { text-align: center; width: 100%; flex-shrink: 0; padding-bottom: 1vh; }
+        .header h1 { font-size: 3.5vh; font-weight: 900; color: #ffd700; text-shadow: 2px 2px 0px #b30047; }
         
-        .main-container {
-            display: flex; gap: 1.5vw; width: 100%; max-width: 1600px; flex: 1; min-height: 0;
-        }
+        .main-container { display: flex; gap: 1.5vw; width: 100%; flex: 1; min-height: 0; }
 
+        /* Grade de Números */
         .grid-container {
-            flex: 1; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px);
+            flex: 1.2; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px);
             border-radius: 2vh; padding: 1.5vh; border: 2px solid rgba(255, 255, 255, 0.3);
             display: grid; grid-template-columns: repeat(15, 1fr); grid-template-rows: repeat(5, 1fr);
-            gap: 0.8vh; min-height: 0;
+            gap: 0.8vh;
         }
-
         .number-cell {
             background: white; color: #e6005c; border-radius: 1vh;
             display: flex; align-items: center; justify-content: center;
-            font-size: 3vh; font-weight: 900; cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            user-select: none; border: none; box-shadow: 0 4px 0px #ccc;
+            font-size: 2.8vh; font-weight: 900; cursor: pointer; border: none;
+            box-shadow: 0 4px 0px #ccc; transition: all 0.1s;
         }
-        .number-cell:active { transform: scale(0.9) translateY(2px); box-shadow: 0 1px 0px #ccc; }
         .number-cell.marked { background: #ffd700; color: #800033; box-shadow: 0 4px 0px #ccac00; }
-        .number-cell.last-marked { 
-            background: #ffffff; color: #e6005c; border: 0.5vh solid #ffd700;
-            box-shadow: 0 0 15px #ffd700; animation: pulse 1s infinite alternate;
-        }
+        .number-cell.last-marked { border: 0.5vh solid #ff1a8c; box-shadow: 0 0 15px #ffd700; }
 
-        .side-panel { width: 22vw; display: flex; flex-direction: column; gap: 1.5vh; flex-shrink: 0; }
+        /* Painel Lateral */
+        .side-panel { flex: 0.8; display: flex; flex-direction: column; gap: 1.5vh; min-width: 300px; }
         
-        .display-card {
-            background: white; border-radius: 2vh; padding: 1.5vh; text-align: center;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2); display: flex; flex-direction: column; justify-content: center;
+        .card { background: white; border-radius: 2vh; padding: 1.5vh; color: #e6005c; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .card-title { font-size: 1.6vh; font-weight: 900; text-transform: uppercase; margin-bottom: 1vh; opacity: 0.7; border-bottom: 1px solid #eee; padding-bottom: 0.5vh; }
+
+        /* Lista de Prêmios */
+        .prize-list-container { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 0.8vh; padding-right: 5px; }
+        .prize-item {
+            background: #f8f8f8; border: 2px solid #eee; padding: 1.2vh; border-radius: 1vh;
+            cursor: pointer; font-weight: 700; font-size: 1.8vh; transition: all 0.2s;
+            display: flex; align-items: center; justify-content: space-between;
         }
-        .display-card.flex-1 { flex: 1; }
+        .prize-item:hover { border-color: #ff1a8c; background: #fff0f6; }
+        .prize-item.active { background: #ffd700; border-color: #b39700; color: #800033; transform: scale(1.02); }
         
-        .display-label { color: #e6005c; font-size: 1.8vh; font-weight: 700; text-transform: uppercase; opacity: 0.8; margin-bottom: 0.5vh; }
-        .display-value { color: #e6005c; font-size: 12vh; font-weight: 900; line-height: 1; }
-        .stats { font-size: 2vh; color: #e6005c; font-weight: 700; margin-top: 1vh; }
+        .edit-prizes-area { display: none; flex-direction: column; gap: 1vh; }
+        .edit-prizes-area textarea { height: 20vh; padding: 1vh; border-radius: 1vh; border: 2px solid #ccc; font-family: inherit; resize: none; }
 
-        /* Nova área de prêmios */
-        .prize-control { display: flex; flex-direction: column; gap: 1vh; }
-        .prize-input-row { display: flex; gap: 0.5vw; }
-        .prize-input { flex: 1; padding: 1vh; border-radius: 1vh; border: 2px solid #ccc; font-family: inherit; font-size: 1.8vh; font-weight: 700; color: #333; outline: none; }
-        .prize-input:focus { border-color: #e6005c; }
-        .btn-prize { background: #00cc66; padding: 1vh 1vw; font-size: 1.6vh; }
+        .last-num-display { font-size: 10vh; font-weight: 900; text-align: center; line-height: 1; }
 
-        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 1vh; }
         .btn {
-            padding: 1.5vh; border-radius: 1.5vh; border: none; font-family: inherit;
-            font-weight: 900; font-size: 1.8vh; cursor: pointer; text-transform: uppercase;
+            padding: 1.2vh; border-radius: 1vh; border: none; font-family: inherit;
+            font-weight: 900; font-size: 1.6vh; cursor: pointer; text-transform: uppercase;
             transition: all 0.2s; color: white;
         }
+        .btn-edit { background: #555; width: 100%; margin-top: 1vh; }
+        .btn-save { background: #00cc66; }
         .btn-reset { background: #ff3333; }
-        .btn-undo { background: #555; }
-        .btn-view { background: #ff1a8c; grid-column: span 2; }
-        .btn-fullscreen { position: fixed; top: 1.5vh; right: 1.5vw; background: rgba(0,0,0,0.3); color: white; border: none; padding: 1vh 2vw; border-radius: 1vh; font-family: inherit; font-weight: bold; cursor: pointer; z-index: 100; transition: background 0.2s; }
-        .btn:hover { filter: brightness(1.1); transform: translateY(-2px); }
+        .btn-undo { background: #888; }
+        
+        .controls-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1vh; }
 
-        @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.05); } }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
     </style>
 </head>
 <body>
-    <button class="btn btn-fullscreen" onclick="toggleFullscreen()">Tela Cheia</button>
 
     <div class="header">
-        <h1>Operador - Bingão das Mães</h1>
+        <h1>PAINEL DE CONTROLE</h1>
     </div>
 
     <div class="main-container">
         <div class="grid-container" id="grid"></div>
 
         <div class="side-panel">
-            <div class="display-card">
-                <div class="display-label">Prêmio da Vez</div>
-                <div class="prize-control">
-                    <div class="prize-input-row">
-                        <input type="text" id="prize-input" class="prize-input" list="prize-list" placeholder="Ex: 1º Prêmio - R$ 500">
-                        <datalist id="prize-list">
-                            <option value="1º Prêmio">
-                            <option value="2º Prêmio">
-                            <option value="3º Prêmio">
-                            <option value="4º Prêmio">
-                            <option value="Cartela Cheia">
-                        </datalist>
-                        <button class="btn btn-prize" onclick="updatePrize()">Definir</button>
+            
+            <div class="card" style="flex: 1; display: flex; flex-direction: column;">
+                <div class="card-title">🏆 PRÊMIOS DO SORTEIO</div>
+                
+                <div id="prize-view" class="prize-list-container">
                     </div>
+
+                <div id="prize-edit" class="edit-prizes-area">
+                    <textarea id="prizes-input" placeholder="Cole sua lista aqui...&#10;Ex:&#10;1º Prêmio - R$ 500&#10;2º Prêmio - Fogão&#10;Cartela Cheia - R$ 2.000"></textarea>
+                    <button class="btn btn-save" onclick="savePrizeList()">Salvar Lista</button>
+                </div>
+                
+                <button class="btn btn-edit" id="toggle-edit" onclick="toggleEdit()">Configurar Prêmios</button>
+            </div>
+
+            <div class="card">
+                <div class="card-title">📍 ÚLTIMO SORTEADO</div>
+                <div class="last-num-display" id="last-number">--</div>
+                <div style="text-align: center; font-weight: bold; margin-top: 1vh;">
+                    Total: <span id="count">0</span>/75
                 </div>
             </div>
 
-            <div class="display-card flex-1">
-                <div class="display-label">Último Número</div>
-                <div class="display-value" id="last-number">--</div>
-                <div class="stats">Sorteados: <span id="count">0</span> / 75</div>
-            </div>
-
-            <div class="controls">
+            <div class="controls-grid">
                 <button class="btn btn-undo" onclick="undoLast()">Desfazer</button>
-                <button class="btn btn-reset" onclick="resetBingo()">Resetar</button>
-                <button class="btn btn-view" onclick="window.open('telao.html', '_blank')">Abrir Telão</button>
+                <button class="btn btn-reset" onclick="resetBingo()">Reset Tudo</button>
+                <button class="btn" style="background: #e6005c; grid-column: span 2;" onclick="window.open('telao.html', '_blank')">Abrir Telão</button>
             </div>
         </div>
     </div>
@@ -136,139 +131,101 @@
         const db = getDatabase(app);
         const bingoRef = ref(db, 'bingo_status');
 
-        const gridEl = document.getElementById('grid');
-        const lastNumberEl = document.getElementById('last-number');
-        const countEl = document.getElementById('count');
-        const prizeInput = document.getElementById('prize-input');
+        let state = {
+            history: [],
+            current_prize: "",
+            prize_list: "1º Prêmio\n2º Prêmio\n3º Prêmio\nCartela Cheia"
+        };
 
-        let markedNumbers = new Set();
-        let history = [];
-        let lastMarked = null;
-        let currentPrize = "";
-
-        function createGrid() {
-            gridEl.innerHTML = '';
-            for (let i = 1; i <= 75; i++) {
-                const cell = document.createElement('button');
-                cell.className = 'number-cell';
-                cell.textContent = i;
-                cell.dataset.number = i;
-                cell.onclick = () => toggleNumber(i);
-                gridEl.appendChild(cell);
-            }
-        }
-
+        // Carrega dados
         onValue(bingoRef, (snapshot) => {
             const data = snapshot.val();
             if (data) {
-                history = data.history || [];
-                currentPrize = data.current_prize || "";
-                prizeInput.value = currentPrize; // Sincroniza o input com o banco
-                markedNumbers = new Set(history);
-                lastMarked = history.length > 0 ? history[history.length - 1] : null;
-            } else {
-                history = [];
-                currentPrize = "";
-                markedNumbers = new Set();
-                lastMarked = null;
+                state = { ...state, ...data };
             }
-            updateDisplay();
+            renderAll();
         });
+
+        function renderAll() {
+            // Renderiza Números
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+            for (let i = 1; i <= 75; i++) {
+                const btn = document.createElement('button');
+                btn.className = 'number-cell';
+                if (state.history.includes(i)) btn.classList.add('marked');
+                if (state.history[state.history.length-1] === i) btn.classList.add('last-marked');
+                btn.textContent = i;
+                btn.onclick = () => toggleNumber(i);
+                grid.appendChild(btn);
+            }
+
+            // Renderiza Prêmios
+            const prizeView = document.getElementById('prize-view');
+            prizeView.innerHTML = '';
+            const list = state.prize_list.split('\n').filter(p => p.trim() !== "");
+            list.forEach(p => {
+                const item = document.createElement('div');
+                item.className = 'prize-item' + (state.current_prize === p ? ' active' : '');
+                item.innerHTML = `<span>${p}</span> ${state.current_prize === p ? '✅' : ''}`;
+                item.onclick = () => setPrize(p);
+                prizeView.appendChild(item);
+            });
+
+            document.getElementById('last-number').textContent = state.history.length > 0 ? state.history[state.history.length-1] : '--';
+            document.getElementById('count').textContent = state.history.length;
+            document.getElementById('prizes-input').value = state.prize_list;
+        }
 
         function sync() {
-            set(bingoRef, { history: history, current_prize: currentPrize });
+            set(bingoRef, state);
         }
 
-        function updatePrize() {
-            currentPrize = prizeInput.value;
+        window.toggleNumber = (num) => {
+            const idx = state.history.indexOf(num);
+            if (idx > -1) state.history.splice(idx, 1);
+            else state.history.push(num);
             sync();
-            alert("Prêmio atualizado no telão!");
-        }
+        };
 
-        function toggleNumber(num) {
-            if (markedNumbers.has(num)) {
-                markedNumbers.delete(num);
-                history = history.filter(n => n !== num);
-                lastMarked = history.length > 0 ? history[history.length - 1] : null;
+        window.setPrize = (name) => {
+            state.current_prize = name;
+            sync();
+        };
+
+        window.savePrizeList = () => {
+            state.prize_list = document.getElementById('prizes-input').value;
+            toggleEdit();
+            sync();
+        };
+
+        window.toggleEdit = () => {
+            const view = document.getElementById('prize-view');
+            const edit = document.getElementById('prize-edit');
+            const btn = document.getElementById('toggle-edit');
+            if (view.style.display === 'none') {
+                view.style.display = 'flex';
+                edit.style.display = 'none';
+                btn.textContent = 'Configurar Prêmios';
             } else {
-                markedNumbers.add(num);
-                history.push(num);
-                lastMarked = num;
+                view.style.display = 'none';
+                edit.style.display = 'flex';
+                btn.textContent = 'Cancelar';
             }
+        };
+
+        window.undoLast = () => {
+            state.history.pop();
             sync();
-        }
+        };
 
-        function updateDisplay() {
-            document.querySelectorAll('.number-cell').forEach(cell => {
-                cell.classList.remove('marked', 'last-marked');
-            });
-            
-            markedNumbers.forEach(n => {
-                const cell = document.querySelector(`[data-number="${n}"]`);
-                if (cell) cell.classList.add('marked');
-            });
-
-            if (lastMarked) {
-                const cell = document.querySelector(`[data-number="${lastMarked}"]`);
-                if (cell) cell.classList.add('last-marked');
-                lastNumberEl.textContent = lastMarked;
-            } else {
-                lastNumberEl.textContent = '--';
+        window.resetBingo = () => {
+            if (confirm("Deseja zerar o sorteio atual?")) {
+                state.history = [];
+                state.current_prize = "";
+                sync();
             }
-            
-            countEl.textContent = markedNumbers.size;
-        }
-
-        function resetBingo() {
-            if (!confirm('Tem certeza que deseja ZERAR todo o bingo?')) return;
-            history = [];
-            markedNumbers.clear();
-            lastMarked = null;
-            currentPrize = ""; // Limpa o prêmio também
-            prizeInput.value = "";
-            document.querySelectorAll('.number-cell').forEach(cell => {
-                cell.classList.remove('marked', 'last-marked');
-            });
-            updateDisplay(); 
-            sync();
-        }
-
-        function undoLast() {
-            if (history.length === 0) return;
-            const num = history.pop();
-            markedNumbers.delete(num);
-            const cell = document.querySelector(`[data-number="${num}"]`);
-            if (cell) cell.classList.remove('marked', 'last-marked');
-            
-            lastMarked = history.length > 0 ? history[history.length - 1] : null;
-            if (lastMarked) {
-                const lastCell = document.querySelector(`[data-number="${lastMarked}"]`);
-                if (lastCell) lastCell.classList.add('last-marked');
-            }
-            updateDisplay(); 
-            sync();
-        }
-
-        function toggleFullscreen() {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(() => {});
-            } else {
-                document.exitFullscreen().catch(() => {});
-            }
-        }
-
-        window.toggleFullscreen = toggleFullscreen;
-        window.resetBingo = resetBingo;
-        window.undoLast = undoLast;
-        window.updatePrize = updatePrize;
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'F11') { e.preventDefault(); toggleFullscreen(); }
-            if ((e.ctrlKey || e.metaKey) && e.key === 'z') { e.preventDefault(); undoLast(); }
-            if (e.key === 'Escape' && document.fullscreenElement) { document.exitFullscreen().catch(() => {}); }
-        });
-
-        createGrid();
+        };
     </script>
 </body>
 </html>
