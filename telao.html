@@ -7,20 +7,40 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body { height: 100%; height: 100dvh; overflow: hidden; }
+        
+        /* 100dvh para melhor suporte em navegadores mobile */
+        html, body { height: 100%; height: 100dvh; overflow: hidden; background-color: #000; }
+        
         body {
             font-family: 'Montserrat', sans-serif;
             background: linear-gradient(180deg, #e6005c 0%, #ff0066 20%, #ff1a8c 50%, #ff3385 80%, #e6005c 100%);
             display: flex; flex-direction: column; align-items: center;
-            padding: 1.5vh 2vw; color: white;
+            padding: 2vmin; color: white;
         }
 
         .header {
             width: 100%; display: flex; align-items: center; justify-content: space-between;
-            flex-shrink: 0; padding-bottom: 1.5vh;
+            flex-shrink: 0; padding-bottom: 2vmin; flex-wrap: wrap; gap: 1.5vmin;
         }
-        .header-title { font-size: 4vh; font-weight: 900; color: #ffd700; text-shadow: 2px 2px 0px #b30047; text-transform: uppercase; }
-        .header-stats { background: rgba(255,255,255,0.2); padding: 1vh 2vw; border-radius: 50px; font-size: 2.5vh; font-weight: 700; }
+        
+        .header-title { 
+            font-size: clamp(1.5rem, 4vmin, 6vh); 
+            font-weight: 900; color: #ffd700; 
+            /* Sombra e leve brilho para se destacar no telão de LED */
+            text-shadow: 0.3vmin 0.3vmin 0px #b30047, 0 0 1.5vmin rgba(255,215,0,0.4); 
+            text-transform: uppercase; 
+            text-align: center;
+            flex: 1;
+        }
+        
+        .header-stats { 
+            background: rgba(255,255,255,0.2); 
+            padding: 1vmin 3vmin; 
+            border-radius: 50px; 
+            font-size: clamp(1.2rem, 3vmin, 4vh); 
+            font-weight: 700; 
+            white-space: nowrap;
+        }
         
         .main-content {
             display: flex; gap: 2vw; width: 100%; flex: 1; min-height: 0; align-items: stretch;
@@ -28,26 +48,30 @@
 
         .grid-container {
             flex: 1; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px);
-            border-radius: 2vh; padding: 2vh; border: 2px solid rgba(255, 255, 255, 0.2);
-            display: grid; grid-template-columns: repeat(15, 1fr); grid-template-rows: repeat(5, 1fr);
-            gap: 1vh; min-height: 0;
+            border-radius: 2vmin; padding: 1.5vmin; border: 2px solid rgba(255, 255, 255, 0.2);
+            display: grid; 
+            /* Padrão Widescreen / Telão: 15 colunas, 5 linhas */
+            grid-template-columns: repeat(15, 1fr); 
+            grid-template-rows: repeat(5, 1fr);
+            gap: 1vmin; min-height: 0;
         }
 
         .num-card {
-            background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.3); border-radius: 1vh;
+            background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.3); border-radius: 1vmin;
             display: flex; align-items: center; justify-content: center;
-            font-size: 3.5vh; font-weight: 900; border: 1px solid rgba(255,255,255,0.1);
+            font-size: clamp(1rem, 3.5vmin, 5vh); font-weight: 900; border: 1px solid rgba(255,255,255,0.1);
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            user-select: none;
         }
         
         .num-card.active {
             background: #ffd700; color: #800033; border-color: white; opacity: 1;
-            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3); transform: scale(1.05);
+            box-shadow: 0 0 1.5vmin rgba(255, 215, 0, 0.5); transform: scale(1.05);
         }
 
         .num-card.last {
-            background: #ffffff; color: #e6005c; border: 0.5vh solid #ffd700;
-            box-shadow: 0 0 20px #ffd700; z-index: 10; animation: pulse 1s infinite alternate;
+            background: #ffffff; color: #e6005c; border: 0.5vmin solid #ffd700;
+            box-shadow: 0 0 3vmin #ffd700; z-index: 10; animation: pulse 1s infinite alternate;
         }
 
         .overlay-big-number {
@@ -55,13 +79,55 @@
             background: rgba(230, 0, 92, 0.95); z-index: 1000;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             opacity: 0; pointer-events: none; transition: opacity 0.3s;
+            backdrop-filter: blur(8px); /* Efeito de vidro por trás do número */
         }
+        
         .overlay-big-number.show { opacity: 1; }
-        .overlay-text { font-size: 6vh; font-weight: 700; color: white; text-transform: uppercase; letter-spacing: 5px; margin-bottom: 2vh; }
-        .overlay-num { font-size: 45vh; font-weight: 900; color: #ffd700; line-height: 1; text-shadow: 10px 10px 0px rgba(0,0,0,0.2); animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        
+        .overlay-text { 
+            font-size: clamp(2rem, 6vmin, 8vh); 
+            font-weight: 700; color: white; 
+            text-transform: uppercase; letter-spacing: 0.5vmin; margin-bottom: 2vh; text-align: center;
+        }
+        
+        .overlay-num { 
+            /* Usa vmin para evitar que vase em telas verticais estreitas */
+            font-size: clamp(8rem, 45vmin, 60vh); 
+            font-weight: 900; color: #ffd700; line-height: 1; 
+            text-shadow: 1vmin 1vmin 0px rgba(0,0,0,0.2); 
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        }
 
-        .btn-fullscreen { position: fixed; bottom: 2vh; right: 2vw; background: rgba(0,0,0,0.3); color: white; border: none; padding: 1vh 2vw; border-radius: 1vh; font-family: inherit; font-weight: bold; cursor: pointer; z-index: 100; transition: background 0.2s; }
+        .btn-fullscreen { 
+            position: fixed; bottom: 2vmin; right: 2vmin; background: rgba(0,0,0,0.3); 
+            color: white; border: none; padding: 1.5vmin 3vmin; border-radius: 1vmin; 
+            font-family: inherit; font-weight: bold; cursor: pointer; z-index: 100; 
+            transition: background 0.2s; font-size: clamp(0.8rem, 1.5vmin, 2vh); 
+        }
+        
         .btn-fullscreen:hover { background: rgba(0,0,0,0.5); }
+
+        /* =========================================================
+           RESPONSIVIDADE: CELULAR (Telas pequenas ou Modo Retrato) 
+           ========================================================= */
+        @media (max-width: 768px), (orientation: portrait) {
+            .header {
+                flex-direction: column;
+                justify-content: center;
+                padding-bottom: 1.5vmin;
+            }
+            .grid-container {
+                /* Inverte a grade para 5 colunas x 15 linhas no celular */
+                grid-template-columns: repeat(5, 1fr);
+                grid-template-rows: repeat(15, 1fr);
+            }
+            .btn-fullscreen {
+                /* Oculta ou diminui a opacidade para não atrapalhar no celular */
+                bottom: 1vmin; right: 1vmin;
+                padding: 1vmin 2vmin;
+                opacity: 0.4;
+            }
+        }
 
         @keyframes pulse { from { transform: scale(1.05); } to { transform: scale(1.15); } }
         @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
