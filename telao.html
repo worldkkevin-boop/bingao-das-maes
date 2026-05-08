@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bingão das Mães 2026 - Telão</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; height: 100dvh; overflow: hidden; }
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(180deg, #e6005c 0%, #ff0066 20%, #ff1a8c 50%, #ff3385 80%, #e6005c 100%);
+            display: flex; flex-direction: column; align-items: center;
+            padding: 1.5vh 2vw; color: white;
+        }
+
+        .header {
+            width: 100%; display: flex; align-items: center; justify-content: space-between;
+            flex-shrink: 0; padding-bottom: 1.5vh;
+        }
+        .header-title { font-size: 4vh; font-weight: 900; color: #ffd700; text-shadow: 2px 2px 0px #b30047; text-transform: uppercase; }
+        .header-stats { background: rgba(255,255,255,0.2); padding: 1vh 2vw; border-radius: 50px; font-size: 2.5vh; font-weight: 700; }
+        
+        .main-content {
+            display: flex; gap: 2vw; width: 100%; flex: 1; min-height: 0; align-items: stretch;
+        }
+
+        .grid-container {
+            flex: 1; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px);
+            border-radius: 2vh; padding: 2vh; border: 2px solid rgba(255, 255, 255, 0.2);
+            display: grid; grid-template-columns: repeat(15, 1fr); grid-template-rows: repeat(5, 1fr);
+            gap: 1vh; min-height: 0;
+        }
+
+        .num-card {
+            background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.3); border-radius: 1vh;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 3.5vh; font-weight: 900; border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .num-card.active {
+            background: #ffd700; color: #800033; border-color: white; opacity: 1;
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3); transform: scale(1.05);
+        }
+
+        .num-card.last {
+            background: #ffffff; color: #e6005c; border: 0.5vh solid #ffd700;
+            box-shadow: 0 0 20px #ffd700; z-index: 10; animation: pulse 1s infinite alternate;
+        }
+
+        .overlay-big-number {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(230, 0, 92, 0.95); z-index: 1000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s;
+        }
+        .overlay-big-number.show { opacity: 1; }
+        .overlay-text { font-size: 6vh; font-weight: 700; color: white; text-transform: uppercase; letter-spacing: 5px; margin-bottom: 2vh; }
+        .overlay-num { font-size: 45vh; font-weight: 900; color: #ffd700; line-height: 1; text-shadow: 10px 10px 0px rgba(0,0,0,0.2); animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+
+        .btn-fullscreen { position: fixed; bottom: 2vh; right: 2vw; background: rgba(0,0,0,0.3); color: white; border: none; padding: 1vh 2vw; border-radius: 1vh; font-family: inherit; font-weight: bold; cursor: pointer; z-index: 100; transition: background 0.2s; }
+        .btn-fullscreen:hover { background: rgba(0,0,0,0.5); }
+
+        @keyframes pulse { from { transform: scale(1.05); } to { transform: scale(1.15); } }
+        @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+    </style>
+</head>
+<body>
+    <button class="btn-fullscreen" onclick="toggleFullscreen()">TELA CHEIA (F11)</button>
+
+    <div class="header">
+        <div class="header-title">BINGÃO DAS MÃES 2026</div>
+        <div class="header-stats">SORTEADOS: <span id="count-marked">0</span> / 75</div>
+    </div>
+
+    <div class="main-content">
+        <div class="grid-container" id="grid"></div>
+    </div>
+
+    <div class="overlay-big-number" id="overlay">
+        <div class="overlay-text">NÚMERO SORTEADO</div>
+        <div class="overlay-num" id="overlay-num"></div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBXSigj-nvpEykiXA53dKHBwCiE77BE5V4",
+            authDomain: "bingaomaes.firebaseapp.com",
+            projectId: "bingaomaes",
+            storageBucket: "bingaomaes.firebasestorage.app",
+            messagingSenderId: "1080021616743",
+            appId: "1:1080021616743:web:31ce8cad4e0f45f35d6cc2",
+            databaseURL: "https://bingaomaes-default-rtdb.firebaseio.com"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const bingoRef = ref(db, 'bingo_status');
+
+        const gridEl = document.getElementById('grid');
+        const countMarkedEl = document.getElementById('count-marked');
+        const overlay = document.getElementById('overlay');
+        const overlayNum = document.getElementById('overlay-num');
+        
+        let prevLast = null;
+        let hideTimeout;
+
+        function createGrid() {
+            gridEl.innerHTML = '';
+            for (let i = 1; i <= 75; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'num-card';
+                cell.textContent = i;
+                cell.dataset.number = i;
+                gridEl.appendChild(cell);
+            }
+        }
+
+        function showBigNumber(num) {
+            overlayNum.textContent = num;
+            overlay.classList.add('show');
+            clearTimeout(hideTimeout);
+            hideTimeout = setTimeout(() => {
+                overlay.classList.remove('show');
+            }, 3500); 
+        }
+
+        onValue(bingoRef, (snapshot) => {
+            const data = snapshot.val();
+            const marked = data && data.history ? data.history : [];
+            const savedLast = marked.length > 0 ? marked[marked.length - 1] : null;
+
+            document.querySelectorAll('.num-card').forEach(cell => {
+                cell.classList.remove('active', 'last');
+            });
+
+            marked.forEach(n => {
+                const cell = document.querySelector(`[data-number="${n}"]`);
+                if (cell) cell.classList.add('active');
+            });
+
+            countMarkedEl.textContent = marked.length;
+
+            const last = savedLast ? parseInt(savedLast) : null;
+            if (last) {
+                const cell = document.querySelector(`[data-number="${last}"]`);
+                if (cell) cell.classList.add('last');
+
+                if (last !== prevLast) {
+                    showBigNumber(last);
+                    prevLast = last;
+                }
+            } else {
+                prevLast = null;
+            }
+        });
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+                document.exitFullscreen().catch(() => {});
+            }
+        }
+
+        window.toggleFullscreen = toggleFullscreen;
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'F11') { e.preventDefault(); toggleFullscreen(); }
+        });
+
+        createGrid();
+    </script>
+</body>
+</html>

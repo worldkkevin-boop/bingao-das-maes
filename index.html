@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bingão das Mães 2026 - Marcação</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; height: 100dvh; overflow: hidden; }
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(180deg, #e6005c 0%, #ff0066 20%, #ff1a8c 50%, #ff3385 80%, #e6005c 100%);
+            display: flex; flex-direction: column; align-items: center;
+            padding: 1vh 1.5vw; color: white;
+        }
+        .header { text-align: center; width: 100%; max-width: 1600px; flex-shrink: 0; padding-bottom: 0.8vh; }
+        .header h1 { font-size: 3.8vh; font-weight: 900; color: #ffd700; text-shadow: 2px 2px 0px #b30047; text-transform: uppercase; }
+        
+        .main-container {
+            display: flex; gap: 1.5vw; width: 100%; max-width: 1600px; flex: 1; min-height: 0;
+        }
+
+        .grid-container {
+            flex: 1; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px);
+            border-radius: 2vh; padding: 1.5vh; border: 2px solid rgba(255, 255, 255, 0.3);
+            display: grid; grid-template-columns: repeat(15, 1fr); grid-template-rows: repeat(5, 1fr);
+            gap: 0.8vh; min-height: 0;
+        }
+
+        .number-cell {
+            background: white; color: #e6005c; border-radius: 1vh;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 3vh; font-weight: 900; cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            user-select: none; border: none; box-shadow: 0 4px 0px #ccc;
+        }
+        .number-cell:active { transform: scale(0.9) translateY(2px); box-shadow: 0 1px 0px #ccc; }
+        .number-cell.marked { background: #ffd700; color: #800033; box-shadow: 0 4px 0px #ccac00; }
+        .number-cell.last-marked { 
+            background: #ffffff; color: #e6005c; border: 0.5vh solid #ffd700;
+            box-shadow: 0 0 15px #ffd700; animation: pulse 1s infinite alternate;
+        }
+
+        .side-panel { width: 22vw; display: flex; flex-direction: column; gap: 1.5vh; flex-shrink: 0; }
+        .display-card {
+            background: white; border-radius: 2vh; padding: 1.5vh; text-align: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2); flex: 1; display: flex;
+            flex-direction: column; justify-content: center;
+        }
+        .display-label { color: #e6005c; font-size: 1.8vh; font-weight: 700; text-transform: uppercase; opacity: 0.8; }
+        .display-value { color: #e6005c; font-size: 12vh; font-weight: 900; line-height: 1; }
+        .stats { font-size: 2vh; color: #e6005c; font-weight: 700; margin-top: 1vh; }
+
+        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 1vh; }
+        .btn {
+            padding: 1.5vh; border-radius: 1.5vh; border: none; font-family: inherit;
+            font-weight: 900; font-size: 1.8vh; cursor: pointer; text-transform: uppercase;
+            transition: all 0.2s; color: white;
+        }
+        .btn-reset { background: #ff3333; }
+        .btn-undo { background: #555; }
+        .btn-view { background: #00cc66; grid-column: span 2; }
+        .btn-fullscreen { position: fixed; top: 1.5vh; right: 1.5vw; background: rgba(0,0,0,0.3); color: white; border: none; padding: 1vh 2vw; border-radius: 1vh; font-family: inherit; font-weight: bold; cursor: pointer; z-index: 100; transition: background 0.2s; }
+        .btn:hover { filter: brightness(1.1); transform: translateY(-2px); }
+
+        @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.05); } }
+    </style>
+</head>
+<body>
+    <button class="btn btn-fullscreen" onclick="toggleFullscreen()">Tela Cheia</button>
+
+    <div class="header">
+        <h1>Operador - Bingão das Mães</h1>
+    </div>
+
+    <div class="main-container">
+        <div class="grid-container" id="grid"></div>
+
+        <div class="side-panel">
+            <div class="display-card">
+                <div class="display-label">Último Número</div>
+                <div class="display-value" id="last-number">--</div>
+                <div class="stats">Sorteados: <span id="count">0</span> / 75</div>
+            </div>
+
+            <div class="controls">
+                <button class="btn btn-undo" onclick="undoLast()">Desfazer</button>
+                <button class="btn btn-reset" onclick="resetBingo()">Resetar</button>
+                <button class="btn btn-view" onclick="window.open('telao.html', '_blank')">Abrir Telão</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBXSigj-nvpEykiXA53dKHBwCiE77BE5V4",
+            authDomain: "bingaomaes.firebaseapp.com",
+            projectId: "bingaomaes",
+            storageBucket: "bingaomaes.firebasestorage.app",
+            messagingSenderId: "1080021616743",
+            appId: "1:1080021616743:web:31ce8cad4e0f45f35d6cc2",
+            databaseURL: "https://bingaomaes-default-rtdb.firebaseio.com"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const bingoRef = ref(db, 'bingo_status');
+
+        const gridEl = document.getElementById('grid');
+        const lastNumberEl = document.getElementById('last-number');
+        const countEl = document.getElementById('count');
+
+        let markedNumbers = new Set();
+        let history = [];
+        let lastMarked = null;
+
+        function createGrid() {
+            gridEl.innerHTML = '';
+            for (let i = 1; i <= 75; i++) {
+                const cell = document.createElement('button');
+                cell.className = 'number-cell';
+                cell.textContent = i;
+                cell.dataset.number = i;
+                cell.onclick = () => toggleNumber(i);
+                gridEl.appendChild(cell);
+            }
+        }
+
+        onValue(bingoRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data && data.history) {
+                history = data.history;
+                markedNumbers = new Set(history);
+                lastMarked = history.length > 0 ? history[history.length - 1] : null;
+            } else {
+                history = [];
+                markedNumbers = new Set();
+                lastMarked = null;
+            }
+            updateDisplay();
+        });
+
+        function sync() {
+            set(bingoRef, { history: history });
+        }
+
+        function toggleNumber(num) {
+            if (markedNumbers.has(num)) {
+                markedNumbers.delete(num);
+                history = history.filter(n => n !== num);
+                lastMarked = history.length > 0 ? history[history.length - 1] : null;
+            } else {
+                markedNumbers.add(num);
+                history.push(num);
+                lastMarked = num;
+            }
+            sync();
+        }
+
+        function updateDisplay() {
+            document.querySelectorAll('.number-cell').forEach(cell => {
+                cell.classList.remove('marked', 'last-marked');
+            });
+            
+            markedNumbers.forEach(n => {
+                const cell = document.querySelector(`[data-number="${n}"]`);
+                if (cell) cell.classList.add('marked');
+            });
+
+            if (lastMarked) {
+                const cell = document.querySelector(`[data-number="${lastMarked}"]`);
+                if (cell) cell.classList.add('last-marked');
+                lastNumberEl.textContent = lastMarked;
+            } else {
+                lastNumberEl.textContent = '--';
+            }
+            
+            countEl.textContent = markedNumbers.size;
+        }
+
+        function resetBingo() {
+            if (!confirm('Tem certeza que deseja ZERAR todo o bingo?')) return;
+            history = [];
+            markedNumbers.clear();
+            lastMarked = null;
+            document.querySelectorAll('.number-cell').forEach(cell => {
+                cell.classList.remove('marked', 'last-marked');
+            });
+            updateDisplay(); 
+            sync();
+        }
+
+        function undoLast() {
+            if (history.length === 0) return;
+            const num = history.pop();
+            markedNumbers.delete(num);
+            const cell = document.querySelector(`[data-number="${num}"]`);
+            if (cell) cell.classList.remove('marked', 'last-marked');
+            
+            lastMarked = history.length > 0 ? history[history.length - 1] : null;
+            if (lastMarked) {
+                const lastCell = document.querySelector(`[data-number="${lastMarked}"]`);
+                if (lastCell) lastCell.classList.add('last-marked');
+            }
+            updateDisplay(); 
+            sync();
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+                document.exitFullscreen().catch(() => {});
+            }
+        }
+
+        window.toggleFullscreen = toggleFullscreen;
+        window.resetBingo = resetBingo;
+        window.undoLast = undoLast;
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'F11') { e.preventDefault(); toggleFullscreen(); }
+            if ((e.ctrlKey || e.metaKey) && e.key === 'z') { e.preventDefault(); undoLast(); }
+            if (e.key === 'Escape' && document.fullscreenElement) { document.exitFullscreen().catch(() => {}); }
+        });
+
+        createGrid();
+    </script>
+</body>
+</html>
