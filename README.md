@@ -1,39 +1,44 @@
 # Bingão das Mães 2026 - Sistema de Sorteio e Telões
 
 Sistema completo e sincronizado em tempo real (via Firebase) para o **Bingão das Mães 2026**. 
-Agora o sistema suporta múltiplos ecrãs em simultâneo, permitindo que o operador gira o sorteio enquanto o público acompanha num painel de LED gigante ou nos seus próprios telemóveis.
+Agora o sistema suporta múltiplas telas simultaneamente, permitindo que o operador gerencie o sorteio enquanto o público acompanha em um painel de LED gigante ou nos próprios celulares.
 
 ---
 
-## 📂 Ficheiros do Sistema
+## 🚀 Acesso Rápido
+**[🎯 Central de Controle Oficial do Bingão](https://worldkkevin-boop.github.io/bingao-das-maes/)**
 
-O sistema é agora composto por 4 ficheiros principais:
+---
 
-| Ficheiro | Função |
+## 📂 Arquivos do Sistema
+
+O sistema é agora composto por 4 arquivos principais:
+
+| Arquivo | Função |
 |---------|--------|
-| `index.html` | **Painel do Operador:** Interface de controlo para marcar os números, gerir o prémio atual e abrir os outros ecrãs. |
-| `telao_led.html` | **Ecrã Principal (Painel LED):** Interface de alto contraste e números gigantes, otimizada para projetores e painéis de LED (formato 4x2). |
-| `telao.html` | **Ecrã para Telemóvel:** Versão otimizada (vertical) para o público acompanhar o sorteio no próprio telemóvel. |
-| `qrcode.html` | **Ecrã de QR Code:** Mostra um QR Code gigante para o público ler e aceder rapidamente ao `telao.html`. |
+| `index.html` | **Painel do Operador:** Interface de controle para marcar os números, gerenciar o prêmio atual e abrir as outras telas. |
+| `telao_led.html` | **Tela Principal (Painel LED):** Interface de alto contraste e números gigantes, otimizada para projetores e telões de LED (formato 4x2). |
+| `telao.html` | **Tela para Celular:** Versão otimizada (vertical) para o público acompanhar o sorteio no próprio celular. |
+| `qrcode.html` | **Tela de QR Code:** Mostra um QR Code gigante para o público escanear e acessar rapidamente o `telao.html`. |
 
 ---
 
 ## 🎮 Como Usar
 
 ### 1. Painel do Operador (`index.html`)
-- Abra o `index.html` no navegador do computador principal.
-- **Gestão de Prémios:** Clique em "Configurar Prémios", cole a lista de prémios a sortear e clique em "Salvar Lista". Clique num prémio para o destacar nos ecrãs.
-- **Marcação:** Clique num número para o marcar (fica dourado e é enviado para os ecrãs).
-- **Controlos:** Use os botões na base para abrir o ecrã LED, o ecrã do telemóvel ou o QR Code diretamente do painel.
+- Acesse a **[Central de Controle Oficial](https://worldkkevin-boop.github.io/bingao-das-maes/)** pelo navegador do computador principal.
+- **Gestão de Prêmios:** Clique em "Configurar Prêmios", cole a lista de prêmios a serem sorteados e clique em "Salvar Lista". Clique no nome de um prêmio para destacá-lo no telão.
+- **Marcação:** Clique em um número para marcá-lo (ele fica dourado e é enviado em tempo real para os telões).
+- **Controles:** Use os botões na parte de baixo para abrir o telão de LED, a tela do celular ou a tela do QR Code.
 
 ### 2. Painel LED (`telao_led.html`)
-- Abra através do botão verde no Painel do Operador.
-- Arraste a janela para o monitor secundário (o painel de LED).
-- Pressione **F11** para colocar em ecrã inteiro. Os elementos ajustam-se automaticamente para não criar barras de rolagem.
+- Abra através do botão "Telão (LED)" no Painel do Operador.
+- Arraste a janela para o monitor secundário (o telão de LED).
+- Pressione **F11** para colocar em tela cheia. Os elementos se ajustam matematicamente para não criar barras de rolagem.
 
 ### 3. Acompanhamento pelo Público (`qrcode.html` e `telao.html`)
-- Abra o ecrã do QR Code (`qrcode.html`) e mostre ao público (ou imprima).
-- Ao ler o código, o público acede ao `telao.html` nos seus telemóveis, atualizando automaticamente sempre que uma bola é chamada.
+- Abra a tela do QR Code (`qrcode.html`) e coloque no telão ou imprima.
+- Ao escanear o código, o público acessa o `telao.html` nos próprios celulares, que se atualiza automaticamente sempre que uma nova bola for chamada.
 
 ---
 
@@ -43,7 +48,7 @@ O sistema é agora composto por 4 ficheiros principais:
 - **Data**: 09 de Maio de 2026
 - **Horário**: 17h00
 - **Local**: Terminal Rodoviário
-- **Prémios**: + de R$ 20 mil (PIX, moto, eletrodomésticos)
+- **Prêmios**: + de R$ 20 mil (PIX, moto, eletrodomésticos)
 
 ---
 
@@ -51,14 +56,14 @@ O sistema é agora composto por 4 ficheiros principais:
 
 | Atalho | Ação |
 |--------|------|
-| `F11` | Colocar em ecrã inteiro (funciona em todos os ecrãs) |
-| `Ctrl + Z` | Desfazer a última marcação (apenas no Operador) |
-| `ESC` | Sair do ecrã inteiro |
+| `F11` | Colocar em tela cheia (funciona em todas as telas) |
+| `Ctrl + Z` | Desfazer a última marcação (apenas no Painel do Operador) |
+| `ESC` | Sair da tela cheia |
 
 ---
 
 ## 🔧 Notas e Dicas
 
-- **Internet Obrigatória:** Como o sistema agora utiliza a base de dados em tempo real do Firebase para sincronizar tudo instantaneamente, todos os dispositivos precisam de ligação à internet.
-- **Sincronização:** Se um ecrã perder a ligação, basta recarregar a página (F5) para recuperar todo o histórico atualizado.
-- **Hospedagem:** Certifique-se de que substituiu o link padrão no ficheiro `qrcode.html` pelo link real onde os ficheiros do seu bingo estão alojados.
+- **Internet Obrigatória:** Como o sistema utiliza o banco de dados do Firebase para sincronizar tudo em tempo real, todos os dispositivos precisam de conexão com a internet.
+- **Sincronização:** Se alguma tela perder a conexão, basta recarregar a página (F5) para recuperar todo o histórico de bolas chamadas instantaneamente.
+- **Link do QR Code:** Certifique-se de que o link dentro do arquivo `qrcode.html` seja o endereço oficial que vai direto para a tela dos celulares: `https://worldkkevin-boop.github.io/bingao-das-maes/telao.html`
