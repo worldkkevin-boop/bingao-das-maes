@@ -2,242 +2,56 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bingão das Mães 2026 - Telão</title>
-    <link href="https://worldkkevin-boop.github.io/bingao-das-maes/telao.html">
+    <title>ACOMPANHAR BINGO - QR CODE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        html, body { height: 100%; height: 100dvh; overflow: hidden; background-color: #000; }
-        
         body {
+            /* Fundo rosa para combinar com o tema do evento */
+            background: #e6005c; 
+            color: white; 
             font-family: 'Montserrat', sans-serif;
-            background: linear-gradient(180deg, #e6005c 0%, #ff0066 20%, #ff1a8c 50%, #ff3385 80%, #e6005c 100%);
-            display: flex; flex-direction: column; align-items: center;
-            padding: 1.5vmin; color: white;
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center;
+            height: 100vh; 
+            margin: 0; 
+            text-align: center;
         }
-
-        .header {
-            width: 100%; display: flex; align-items: center; justify-content: space-between;
-            flex-shrink: 0; padding-bottom: 1vmin; flex-wrap: wrap; gap: 1vmin;
+        .qr-card {
+            background: white; 
+            padding: 40px; 
+            border-radius: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            margin: 20px 0;
         }
-        
-        .header-title { 
-            font-size: clamp(1.2rem, 3.5vmin, 5vh); 
-            font-weight: 900; color: #ffd700; 
-            text-shadow: 0.3vmin 0.3vmin 0px #b30047, 0 0 1.5vmin rgba(255,215,0,0.4); 
-            text-transform: uppercase; flex: 1; text-align: left;
+        h1 { 
+            font-size: 60px; 
+            text-transform: uppercase;
+            color: #ffd700;
+            text-shadow: 4px 4px 0 #000; 
         }
-        
-        .header-stats { 
-            background: rgba(255,255,255,0.2); 
-            padding: 0.8vmin 2.5vmin; border-radius: 50px; 
-            font-size: clamp(1rem, 2.5vmin, 3.5vh); 
-            font-weight: 700; white-space: nowrap;
+        p { 
+            font-size: 30px; 
+            font-weight: bold; 
+            text-shadow: 2px 2px 0 #000;
         }
-
-        .prize-banner {
-            width: 100%; background: #ffd700; color: #800033;
-            text-align: center; padding: 1.2vmin; border-radius: 1.2vmin;
-            font-size: clamp(1.1rem, 3vmin, 4vh); font-weight: 900;
-            text-transform: uppercase; margin-bottom: 1vmin;
-            box-shadow: 0 0.5vmin 1.5vmin rgba(0,0,0,0.3);
-            display: none; flex-shrink: 0;
+        img { 
+            width: 450px; 
+            height: 450px; 
         }
-        .prize-banner.show { display: block; animation: slideDown 0.5s ease; }
-        
-        .main-content {
-            width: 100%; flex: 1; min-height: 0; display: flex; flex-direction: column;
-        }
-
-        /* Cabeçalho das Letras BINGO */
-        .bingo-letters-row {
-            display: grid; grid-template-columns: repeat(5, 1fr);
-            gap: 1vmin; margin-bottom: 0.5vmin; flex-shrink: 0;
-        }
-        .bingo-letter {
-            text-align: center; font-size: clamp(1.5rem, 5vmin, 6vh);
-            font-weight: 900; color: #ffd700;
-            text-shadow: 0.4vmin 0.4vmin 0px #800033;
-        }
-
-        .grid-container {
-            flex: 1; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px);
-            border-radius: 1.5vmin; padding: 1vmin; border: 2px solid rgba(255, 255, 255, 0.2);
-            display: grid; 
-            grid-template-columns: repeat(5, 1fr); /* 5 Colunas padrão BINGO */
-            grid-template-rows: repeat(15, 1fr); /* 15 Números por coluna */
-            gap: 0.6vmin; min-height: 0;
-        }
-
-        .num-card {
-            background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.3); border-radius: 0.8vmin;
-            display: flex; align-items: center; justify-content: center;
-            font-size: clamp(0.9rem, 2.8vmin, 4vh); font-weight: 900; 
-            border: 1px solid rgba(255,255,255,0.1);
-            transition: all 0.3s ease;
-        }
-        
-        .num-card.active {
-            background: #ffd700; color: #800033; border-color: white;
-            box-shadow: 0 0 1vmin rgba(255, 215, 0, 0.5); transform: scale(1.02);
-        }
-
-        .num-card.last {
-            background: #ffffff; color: #e6005c; border: 0.4vmin solid #ffd700;
-            box-shadow: 0 0 3vmin #ffd700; z-index: 10; animation: pulse 1s infinite alternate;
-        }
-
-        /* Overlay do Número Grande */
-        .overlay-big-number {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(230, 0, 92, 0.98); z-index: 1000;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            opacity: 0; pointer-events: none; transition: opacity 0.3s;
-        }
-        .overlay-big-number.show { opacity: 1; }
-        .overlay-text { font-size: 5vmin; font-weight: 700; color: white; margin-bottom: 2vh; }
-        .overlay-num { font-size: 50vmin; font-weight: 900; color: #ffd700; line-height: 1; }
-
-        .btn-fullscreen { 
-            position: fixed; bottom: 2vmin; right: 2vmin; background: rgba(0,0,0,0.3); 
-            color: white; border: none; padding: 1vmin 2vmin; border-radius: 0.8vmin; 
-            cursor: pointer; z-index: 100; font-size: 1.5vmin; 
-        }
-
-        @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.1); } }
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
-    <button class="btn-fullscreen" onclick="toggleFullscreen()">TELA CHEIA (F11)</button>
-
-    <div class="header">
-        <div class="header-title">BINGÃO DAS MÃES 2026</div>
-        <div class="header-stats">SORTEADOS: <span id="count-marked">0</span> / 75</div>
+    
+    <h1>ACOMPANHE O BINGO</h1>
+    
+    <div class="qr-card">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=https://worldkkevin-boop.github.io/bingao-das-maes/telao.html" alt="QR Code do Bingo">
     </div>
 
-    <div class="prize-banner" id="prize-banner">
-        VALENDO: <span id="prize-text"></span>
-    </div>
+    <p>Aponte a câmera do celular para a tela!</p>
 
-    <div class="main-content">
-        <div class="bingo-letters-row">
-            <div class="bingo-letter">B</div>
-            <div class="bingo-letter">I</div>
-            <div class="bingo-letter">N</div>
-            <div class="bingo-letter">G</div>
-            <div class="bingo-letter">O</div>
-        </div>
-        <div class="grid-container" id="grid"></div>
-    </div>
-
-    <div class="overlay-big-number" id="overlay">
-        <div class="overlay-text">NÚMERO SORTEADO</div>
-        <div class="overlay-num" id="overlay-num"></div>
-    </div>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyBXSigj-nvpEykiXA53dKHBwCiE77BE5V4",
-            authDomain: "bingaomaes.firebaseapp.com",
-            projectId: "bingaomaes",
-            storageBucket: "bingaomaes.firebasestorage.app",
-            messagingSenderId: "1080021616743",
-            appId: "1:1080021616743:web:31ce8cad4e0f45f35d6cc2",
-            databaseURL: "https://bingaomaes-default-rtdb.firebaseio.com"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-        const bingoRef = ref(db, 'bingo_status');
-
-        const gridEl = document.getElementById('grid');
-        const countMarkedEl = document.getElementById('count-marked');
-        const overlay = document.getElementById('overlay');
-        const overlayNum = document.getElementById('overlay-num');
-        const prizeBanner = document.getElementById('prize-banner');
-        const prizeText = document.getElementById('prize-text');
-        
-        let prevLast = null;
-        let hideTimeout;
-
-        // Cria a grade organizada por Colunas (B=1-15, I=16-30...)
-        function createGrid() {
-            gridEl.innerHTML = '';
-            // 15 linhas
-            for (let row = 0; row < 15; row++) {
-                // 5 colunas (B, I, N, G, O)
-                for (let col = 0; col < 5; col++) {
-                    const num = (col * 15) + (row + 1);
-                    const cell = document.createElement('div');
-                    cell.className = 'num-card';
-                    cell.textContent = num;
-                    cell.dataset.number = num;
-                    gridEl.appendChild(cell);
-                }
-            }
-        }
-
-        function showBigNumber(num) {
-            overlayNum.textContent = num;
-            overlay.classList.add('show');
-            clearTimeout(hideTimeout);
-            hideTimeout = setTimeout(() => {
-                overlay.classList.remove('show');
-            }, 4000); 
-        }
-
-        onValue(bingoRef, (snapshot) => {
-            const data = snapshot.val();
-            const marked = data && data.history ? data.history : [];
-            const savedLast = marked.length > 0 ? marked[marked.length - 1] : null;
-            const currentPrize = data && data.current_prize ? data.current_prize : "";
-
-            if (currentPrize.trim() !== "") {
-                prizeText.textContent = currentPrize;
-                prizeBanner.classList.add('show');
-            } else {
-                prizeBanner.classList.remove('show');
-            }
-
-            document.querySelectorAll('.num-card').forEach(cell => {
-                cell.classList.remove('active', 'last');
-            });
-
-            marked.forEach(n => {
-                const cell = document.querySelector(`[data-number="${n}"]`);
-                if (cell) cell.classList.add('active');
-            });
-
-            countMarkedEl.textContent = marked.length;
-
-            const last = savedLast ? parseInt(savedLast) : null;
-            if (last) {
-                const cell = document.querySelector(`[data-number="${last}"]`);
-                if (cell) cell.classList.add('last');
-                if (last !== prevLast) {
-                    showBigNumber(last);
-                    prevLast = last;
-                }
-            } else {
-                prevLast = null;
-            }
-        });
-
-        function toggleFullscreen() {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(() => {});
-            } else {
-                document.exitFullscreen().catch(() => {});
-            }
-        }
-
-        window.toggleFullscreen = toggleFullscreen;
-        createGrid();
-    </script>
 </body>
 </html>
