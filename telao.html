@@ -8,129 +8,105 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
-        /* 100dvh para melhor suporte em navegadores mobile */
         html, body { height: 100%; height: 100dvh; overflow: hidden; background-color: #000; }
         
         body {
             font-family: 'Montserrat', sans-serif;
             background: linear-gradient(180deg, #e6005c 0%, #ff0066 20%, #ff1a8c 50%, #ff3385 80%, #e6005c 100%);
             display: flex; flex-direction: column; align-items: center;
-            padding: 2vmin; color: white;
+            padding: 1.5vmin; color: white;
         }
 
         .header {
             width: 100%; display: flex; align-items: center; justify-content: space-between;
-            flex-shrink: 0; padding-bottom: 2vmin; flex-wrap: wrap; gap: 1.5vmin;
+            flex-shrink: 0; padding-bottom: 1vmin; flex-wrap: wrap; gap: 1vmin;
         }
         
         .header-title { 
-            font-size: clamp(1.5rem, 4vmin, 6vh); 
+            font-size: clamp(1.2rem, 3.5vmin, 5vh); 
             font-weight: 900; color: #ffd700; 
-            /* Sombra e leve brilho para se destacar no telão de LED */
             text-shadow: 0.3vmin 0.3vmin 0px #b30047, 0 0 1.5vmin rgba(255,215,0,0.4); 
-            text-transform: uppercase; 
-            text-align: center;
-            flex: 1;
+            text-transform: uppercase; flex: 1; text-align: left;
         }
         
         .header-stats { 
             background: rgba(255,255,255,0.2); 
-            padding: 1vmin 3vmin; 
-            border-radius: 50px; 
-            font-size: clamp(1.2rem, 3vmin, 4vh); 
-            font-weight: 700; 
-            white-space: nowrap;
+            padding: 0.8vmin 2.5vmin; border-radius: 50px; 
+            font-size: clamp(1rem, 2.5vmin, 3.5vh); 
+            font-weight: 700; white-space: nowrap;
         }
+
+        .prize-banner {
+            width: 100%; background: #ffd700; color: #800033;
+            text-align: center; padding: 1.2vmin; border-radius: 1.2vmin;
+            font-size: clamp(1.1rem, 3vmin, 4vh); font-weight: 900;
+            text-transform: uppercase; margin-bottom: 1vmin;
+            box-shadow: 0 0.5vmin 1.5vmin rgba(0,0,0,0.3);
+            display: none; flex-shrink: 0;
+        }
+        .prize-banner.show { display: block; animation: slideDown 0.5s ease; }
         
         .main-content {
-            display: flex; gap: 2vw; width: 100%; flex: 1; min-height: 0; align-items: stretch;
+            width: 100%; flex: 1; min-height: 0; display: flex; flex-direction: column;
+        }
+
+        /* Cabeçalho das Letras BINGO */
+        .bingo-letters-row {
+            display: grid; grid-template-columns: repeat(5, 1fr);
+            gap: 1vmin; margin-bottom: 0.5vmin; flex-shrink: 0;
+        }
+        .bingo-letter {
+            text-align: center; font-size: clamp(1.5rem, 5vmin, 6vh);
+            font-weight: 900; color: #ffd700;
+            text-shadow: 0.4vmin 0.4vmin 0px #800033;
         }
 
         .grid-container {
             flex: 1; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px);
-            border-radius: 2vmin; padding: 1.5vmin; border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1.5vmin; padding: 1vmin; border: 2px solid rgba(255, 255, 255, 0.2);
             display: grid; 
-            /* Padrão Widescreen / Telão: 15 colunas, 5 linhas */
-            grid-template-columns: repeat(15, 1fr); 
-            grid-template-rows: repeat(5, 1fr);
-            gap: 1vmin; min-height: 0;
+            grid-template-columns: repeat(5, 1fr); /* 5 Colunas padrão BINGO */
+            grid-template-rows: repeat(15, 1fr); /* 15 Números por coluna */
+            gap: 0.6vmin; min-height: 0;
         }
 
         .num-card {
-            background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.3); border-radius: 1vmin;
+            background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.3); border-radius: 0.8vmin;
             display: flex; align-items: center; justify-content: center;
-            font-size: clamp(1rem, 3.5vmin, 5vh); font-weight: 900; border: 1px solid rgba(255,255,255,0.1);
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            user-select: none;
+            font-size: clamp(0.9rem, 2.8vmin, 4vh); font-weight: 900; 
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s ease;
         }
         
         .num-card.active {
-            background: #ffd700; color: #800033; border-color: white; opacity: 1;
-            box-shadow: 0 0 1.5vmin rgba(255, 215, 0, 0.5); transform: scale(1.05);
+            background: #ffd700; color: #800033; border-color: white;
+            box-shadow: 0 0 1vmin rgba(255, 215, 0, 0.5); transform: scale(1.02);
         }
 
         .num-card.last {
-            background: #ffffff; color: #e6005c; border: 0.5vmin solid #ffd700;
+            background: #ffffff; color: #e6005c; border: 0.4vmin solid #ffd700;
             box-shadow: 0 0 3vmin #ffd700; z-index: 10; animation: pulse 1s infinite alternate;
         }
 
+        /* Overlay do Número Grande */
         .overlay-big-number {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(230, 0, 92, 0.95); z-index: 1000;
+            background: rgba(230, 0, 92, 0.98); z-index: 1000;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             opacity: 0; pointer-events: none; transition: opacity 0.3s;
-            backdrop-filter: blur(8px); /* Efeito de vidro por trás do número */
         }
-        
         .overlay-big-number.show { opacity: 1; }
-        
-        .overlay-text { 
-            font-size: clamp(2rem, 6vmin, 8vh); 
-            font-weight: 700; color: white; 
-            text-transform: uppercase; letter-spacing: 0.5vmin; margin-bottom: 2vh; text-align: center;
-        }
-        
-        .overlay-num { 
-            /* Usa vmin para evitar que vase em telas verticais estreitas */
-            font-size: clamp(8rem, 45vmin, 60vh); 
-            font-weight: 900; color: #ffd700; line-height: 1; 
-            text-shadow: 1vmin 1vmin 0px rgba(0,0,0,0.2); 
-            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-        }
+        .overlay-text { font-size: 5vmin; font-weight: 700; color: white; margin-bottom: 2vh; }
+        .overlay-num { font-size: 50vmin; font-weight: 900; color: #ffd700; line-height: 1; }
 
         .btn-fullscreen { 
             position: fixed; bottom: 2vmin; right: 2vmin; background: rgba(0,0,0,0.3); 
-            color: white; border: none; padding: 1.5vmin 3vmin; border-radius: 1vmin; 
-            font-family: inherit; font-weight: bold; cursor: pointer; z-index: 100; 
-            transition: background 0.2s; font-size: clamp(0.8rem, 1.5vmin, 2vh); 
-        }
-        
-        .btn-fullscreen:hover { background: rgba(0,0,0,0.5); }
-
-        /* =========================================================
-           RESPONSIVIDADE: CELULAR (Telas pequenas ou Modo Retrato) 
-           ========================================================= */
-        @media (max-width: 768px), (orientation: portrait) {
-            .header {
-                flex-direction: column;
-                justify-content: center;
-                padding-bottom: 1.5vmin;
-            }
-            .grid-container {
-                /* Inverte a grade para 5 colunas x 15 linhas no celular */
-                grid-template-columns: repeat(5, 1fr);
-                grid-template-rows: repeat(15, 1fr);
-            }
-            .btn-fullscreen {
-                /* Oculta ou diminui a opacidade para não atrapalhar no celular */
-                bottom: 1vmin; right: 1vmin;
-                padding: 1vmin 2vmin;
-                opacity: 0.4;
-            }
+            color: white; border: none; padding: 1vmin 2vmin; border-radius: 0.8vmin; 
+            cursor: pointer; z-index: 100; font-size: 1.5vmin; 
         }
 
-        @keyframes pulse { from { transform: scale(1.05); } to { transform: scale(1.15); } }
-        @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.1); } }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -141,7 +117,18 @@
         <div class="header-stats">SORTEADOS: <span id="count-marked">0</span> / 75</div>
     </div>
 
+    <div class="prize-banner" id="prize-banner">
+        VALENDO: <span id="prize-text"></span>
+    </div>
+
     <div class="main-content">
+        <div class="bingo-letters-row">
+            <div class="bingo-letter">B</div>
+            <div class="bingo-letter">I</div>
+            <div class="bingo-letter">N</div>
+            <div class="bingo-letter">G</div>
+            <div class="bingo-letter">O</div>
+        </div>
         <div class="grid-container" id="grid"></div>
     </div>
 
@@ -172,18 +159,26 @@
         const countMarkedEl = document.getElementById('count-marked');
         const overlay = document.getElementById('overlay');
         const overlayNum = document.getElementById('overlay-num');
+        const prizeBanner = document.getElementById('prize-banner');
+        const prizeText = document.getElementById('prize-text');
         
         let prevLast = null;
         let hideTimeout;
 
+        // Cria a grade organizada por Colunas (B=1-15, I=16-30...)
         function createGrid() {
             gridEl.innerHTML = '';
-            for (let i = 1; i <= 75; i++) {
-                const cell = document.createElement('div');
-                cell.className = 'num-card';
-                cell.textContent = i;
-                cell.dataset.number = i;
-                gridEl.appendChild(cell);
+            // 15 linhas
+            for (let row = 0; row < 15; row++) {
+                // 5 colunas (B, I, N, G, O)
+                for (let col = 0; col < 5; col++) {
+                    const num = (col * 15) + (row + 1);
+                    const cell = document.createElement('div');
+                    cell.className = 'num-card';
+                    cell.textContent = num;
+                    cell.dataset.number = num;
+                    gridEl.appendChild(cell);
+                }
             }
         }
 
@@ -193,13 +188,21 @@
             clearTimeout(hideTimeout);
             hideTimeout = setTimeout(() => {
                 overlay.classList.remove('show');
-            }, 3500); 
+            }, 4000); 
         }
 
         onValue(bingoRef, (snapshot) => {
             const data = snapshot.val();
             const marked = data && data.history ? data.history : [];
             const savedLast = marked.length > 0 ? marked[marked.length - 1] : null;
+            const currentPrize = data && data.current_prize ? data.current_prize : "";
+
+            if (currentPrize.trim() !== "") {
+                prizeText.textContent = currentPrize;
+                prizeBanner.classList.add('show');
+            } else {
+                prizeBanner.classList.remove('show');
+            }
 
             document.querySelectorAll('.num-card').forEach(cell => {
                 cell.classList.remove('active', 'last');
@@ -216,7 +219,6 @@
             if (last) {
                 const cell = document.querySelector(`[data-number="${last}"]`);
                 if (cell) cell.classList.add('last');
-
                 if (last !== prevLast) {
                     showBigNumber(last);
                     prevLast = last;
@@ -235,11 +237,6 @@
         }
 
         window.toggleFullscreen = toggleFullscreen;
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'F11') { e.preventDefault(); toggleFullscreen(); }
-        });
-
         createGrid();
     </script>
 </body>
