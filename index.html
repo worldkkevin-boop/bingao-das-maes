@@ -6,25 +6,31 @@
     <title>Bingão das Mães 2026 - Operador</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
     <style>
+        /* TRAVA GLOBAL */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body { height: 100%; height: 100dvh; overflow: hidden; }
+        
         body {
             font-family: 'Montserrat', sans-serif;
             background: linear-gradient(180deg, #e6005c 0%, #ff0066 20%, #ff1a8c 50%, #ff3385 80%, #e6005c 100%);
             display: flex; flex-direction: column; align-items: center;
-            padding: 1vh 1.5vw; color: white;
+            padding: 1.5vh 1.5vw; color: white;
+            height: 100vh; overflow: hidden; /* Trava a rolagem na tela do PC */
         }
+        
         .header { text-align: center; width: 100%; flex-shrink: 0; padding-bottom: 1vh; }
         .header h1 { font-size: 3.5vh; font-weight: 900; color: #ffd700; text-shadow: 2px 2px 0px #b30047; }
         
-        .main-container { display: flex; gap: 1.5vw; width: 100%; flex: 1; min-height: 0; }
+        .main-container { 
+            display: flex; gap: 1.5vw; width: 100%; flex: 1; 
+            min-height: 0; /* Essencial para a barra de rolagem funcionar */
+        }
 
-        /* Grade de Números */
+        /* LADO ESQUERDO: GRADE DE NÚMEROS */
         .grid-container {
-            flex: 1.2; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px);
+            flex: 1.4; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px);
             border-radius: 2vh; padding: 1.5vh; border: 2px solid rgba(255, 255, 255, 0.3);
             display: grid; grid-template-columns: repeat(15, 1fr); grid-template-rows: repeat(5, 1fr);
-            gap: 0.8vh;
+            gap: 0.8vh; min-height: 0;
         }
         .number-cell {
             background: white; color: #e6005c; border-radius: 1vh;
@@ -35,41 +41,83 @@
         .number-cell.marked { background: #ffd700; color: #800033; box-shadow: 0 4px 0px #ccac00; }
         .number-cell.last-marked { border: 0.5vh solid #ff1a8c; box-shadow: 0 0 15px #ffd700; }
 
-        /* Painel Lateral */
-        .side-panel { flex: 0.8; display: flex; flex-direction: column; gap: 1.5vh; min-width: 300px; }
+        /* LADO DIREITO: PAINEL DE CONTROLE */
+        .side-panel { 
+            flex: 0.6; display: flex; flex-direction: column; gap: 1.5vh; 
+            min-width: 350px; min-height: 0; 
+        }
         
-        .card { background: white; border-radius: 2vh; padding: 1.5vh; color: #e6005c; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-        .card-title { font-size: 1.6vh; font-weight: 900; text-transform: uppercase; margin-bottom: 1vh; opacity: 0.7; border-bottom: 1px solid #eee; padding-bottom: 0.5vh; }
+        .card { 
+            background: white; border-radius: 2vh; padding: 1.5vh; color: #e6005c; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
+            display: flex; flex-direction: column;
+        }
+        
+        /* O SEGREDO DA BARRA DE ROLAGEM AQUI */
+        .card-prizes { flex: 1; min-height: 0; } 
+        
+        .card-title { font-size: 1.6vh; font-weight: 900; text-transform: uppercase; margin-bottom: 1vh; opacity: 0.7; border-bottom: 1px solid #eee; padding-bottom: 0.5vh; flex-shrink: 0; }
 
-        /* Lista de Prêmios */
-        .prize-list-container { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 0.8vh; padding-right: 5px; }
+        /* Lista de Prêmios - Rola Apenas Aqui Dentro */
+        .prize-list-container { 
+            flex: 1; overflow-y: auto; display: flex; flex-direction: column; 
+            gap: 0.8vh; padding-right: 5px; min-height: 0;
+        }
         .prize-item {
             background: #f8f8f8; border: 2px solid #eee; padding: 1.2vh; border-radius: 1vh;
             cursor: pointer; font-weight: 700; font-size: 1.8vh; transition: all 0.2s;
-            display: flex; align-items: center; justify-content: space-between;
+            display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
         }
         .prize-item:hover { border-color: #ff1a8c; background: #fff0f6; }
         .prize-item.active { background: #ffd700; border-color: #b39700; color: #800033; transform: scale(1.02); }
         
-        .edit-prizes-area { display: none; flex-direction: column; gap: 1vh; }
-        .edit-prizes-area textarea { height: 20vh; padding: 1vh; border-radius: 1vh; border: 2px solid #ccc; font-family: inherit; resize: none; }
+        .edit-prizes-area { display: none; flex-direction: column; gap: 1vh; flex: 1; min-height: 0; }
+        .edit-prizes-area textarea { flex: 1; padding: 1vh; border-radius: 1vh; border: 2px solid #ccc; font-family: inherit; resize: none; }
 
-        .last-num-display { font-size: 10vh; font-weight: 900; text-align: center; line-height: 1; }
+        .last-num-display { font-size: 9vh; font-weight: 900; text-align: center; line-height: 1; }
 
         .btn {
             padding: 1.2vh; border-radius: 1vh; border: none; font-family: inherit;
             font-weight: 900; font-size: 1.6vh; cursor: pointer; text-transform: uppercase;
             transition: all 0.2s; color: white;
         }
-        .btn-edit { background: #555; width: 100%; margin-top: 1vh; }
-        .btn-save { background: #00cc66; }
+        .btn-edit { background: #555; width: 100%; margin-top: 1vh; flex-shrink: 0; }
+        .btn-save { background: #00cc66; flex-shrink: 0;}
         .btn-reset { background: #ff3333; }
         .btn-undo { background: #888; }
         
-        .controls-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1vh; }
+        .controls-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1vh; flex-shrink: 0; }
 
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
+        /* Estiliza a barra de rolagem */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #e6005c; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #b30047; }
+
+
+        /* =========================================
+           MODO CELULAR / TELAS PEQUENAS (Responsivo)
+           ========================================= */
+        @media (max-width: 900px), (orientation: portrait) {
+            body { 
+                height: auto; min-height: 100vh; 
+                overflow-y: auto; /* Libera rolagem geral na tela do celular */
+                display: block; padding: 2vh 3vw;
+            }
+            .main-container { flex-direction: column; gap: 2vh; }
+            
+            .grid-container {
+                /* Inverte para 5 colunas x 15 linhas no celular */
+                grid-template-columns: repeat(5, 1fr); 
+                grid-template-rows: repeat(15, 1fr);
+                height: 75vh; /* Ocupa a primeira tela toda */
+                flex: none;
+            }
+            
+            .side-panel { width: 100%; min-width: 100%; flex: none; gap: 2vh; }
+            
+            .card-prizes { height: 40vh; /* Tamanho fixo da lista no celular */ }
+        }
     </style>
 </head>
 <body>
@@ -83,21 +131,20 @@
 
         <div class="side-panel">
             
-            <div class="card" style="flex: 1; display: flex; flex-direction: column;">
+            <div class="card card-prizes">
                 <div class="card-title">🏆 PRÊMIOS DO SORTEIO</div>
                 
-                <div id="prize-view" class="prize-list-container">
-                    </div>
+                <div id="prize-view" class="prize-list-container"></div>
 
                 <div id="prize-edit" class="edit-prizes-area">
-                    <textarea id="prizes-input" placeholder="Cole sua lista aqui...&#10;Ex:&#10;1º Prêmio - R$ 500&#10;2º Prêmio - Fogão&#10;Cartela Cheia - R$ 2.000"></textarea>
+                    <textarea id="prizes-input" placeholder="Cole sua lista aqui..."></textarea>
                     <button class="btn btn-save" onclick="savePrizeList()">Salvar Lista</button>
                 </div>
                 
                 <button class="btn btn-edit" id="toggle-edit" onclick="toggleEdit()">Configurar Prêmios</button>
             </div>
 
-            <div class="card">
+            <div class="card" style="flex-shrink: 0;">
                 <div class="card-title">📍 ÚLTIMO SORTEADO</div>
                 <div class="last-num-display" id="last-number">--</div>
                 <div style="text-align: center; font-weight: bold; margin-top: 1vh;">
@@ -109,7 +156,7 @@
                 <button class="btn btn-undo" onclick="undoLast()">Desfazer</button>
                 <button class="btn btn-reset" onclick="resetBingo()">Reset Tudo</button>
                 
-                <button class="btn" style="background: #FFD700; grid-column: span 2;" onclick="window.open('telao.html', '_blank')">📱 Abrir Telão (Celular)</button>
+                <button class="btn" style="background: #ff1a8c; grid-column: span 2;" onclick="window.open('telao.html', '_blank')">📱 Abrir Telão (Celular)</button>
                 
                 <button class="btn" style="background: #00cc66;" onclick="window.open('telao_led.html', '_blank')">💻 Telão (LED)</button>
                 <button class="btn" style="background: #007bff;" onclick="window.open('qrcode.html', '_blank')">📷 QR Code</button>
@@ -141,7 +188,6 @@
             prize_list: "1º Prêmio\n2º Prêmio\n3º Prêmio\nCartela Cheia"
         };
 
-        // Carrega dados
         onValue(bingoRef, (snapshot) => {
             const data = snapshot.val();
             if (data) {
@@ -151,7 +197,6 @@
         });
 
         function renderAll() {
-            // Renderiza Números
             const grid = document.getElementById('grid');
             grid.innerHTML = '';
             for (let i = 1; i <= 75; i++) {
@@ -164,7 +209,6 @@
                 grid.appendChild(btn);
             }
 
-            // Renderiza Prêmios
             const prizeView = document.getElementById('prize-view');
             prizeView.innerHTML = '';
             const list = state.prize_list.split('\n').filter(p => p.trim() !== "");
